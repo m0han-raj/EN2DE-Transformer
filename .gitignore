@@ -1,4 +1,20 @@
-data
-.keras
-model
+# Data, checkpoints and trained models
+data/
+ckpt/
+model/
+.keras/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# OS / IDE / cloud studio
+.DS_Store
+.idea/
+.vscode/
+.lightning_studio/
 main.py
