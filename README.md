@@ -1,48 +1,71 @@
+# EN2DE-Transformer
 
-# English to German Translation Using Transformer Model
+An English-to-German neural machine translation model: a Transformer implemented from scratch in TensorFlow 2, following "Attention Is All You Need" (Vaswani et al., 2017).
 
-This project implements a Transformer-based model to translate English sentences to German. The Transformer model, known for its self-attention mechanism, has revolutionized machine translation by enabling parallel processing and capturing long-range dependencies within sentences.
+## Overview
 
-# key features
+The whole pipeline lives in a single notebook, `model.ipynb`: text cleaning, subword tokenization, the Transformer architecture, training, and interactive translation. It is trained on the Europarl English-German parallel corpus.
 
-**English to German Translation :**  Utilizes a Transformer architecture trained on the WMT14 English-German dataset to translate text.
+## Features
 
-**Efficient Attention Mechanism :** The self-attention mechanism allows the model to focus on different parts of the sentence for better translation accuracy.
+- Transformer built from custom Keras layers: positional encoding, scaled dot-product attention, multi-head attention, encoder and decoder stacks
+- Padding and look-ahead masks
+- Subword tokenization (`SubwordTextEncoder`, 8,000 target vocabulary per language)
+- Custom warm-up learning-rate schedule from the paper, masked loss, checkpointing
+- Greedy decoding for translating new sentences
 
-**Preprocessing and Tokenization :** Includes text preprocessing, tokenization, and padding to handle input and output sequences.
+## Project structure
 
-**Model Training :** The model is trained using advanced optimization techniques to improve accuracy over multiple epochs.
+```
+.
+├── model.ipynb        # data prep, model, training, evaluation
+├── requirements.txt
+├── LICENSE
+└── data/              # not tracked; see Data below
+```
 
-# Technologies used
+## Setup
 
-Transformer Architecture
+```bash
+git clone https://github.com/m0han-raj/EN2DE-Transformer.git
+cd EN2DE-Transformer
+pip install -r requirements.txt
+```
 
-TensorFlow/PyTorch (for model implementation)
+`tfds.deprecated.text.SubwordTextEncoder` is only available in older `tensorflow-datasets` releases; if the import fails, install a version that still ships it.
 
-WMT14 English-German Dataset
+### Data
 
-Python (for data preprocessing and model training)
+Create a `data/` folder containing:
 
-## Introduction:
-This is an English to German translator built using Transformers. The transformer was implemented from scratch using TensorFlow 2 and the instructions of the paper "Attention Is All You Need"
+- `europarl-v7.de-en.en` and `europarl-v7.de-en.de` from the [Europarl corpus](https://www.statmt.org/europarl/)
+- `nonbreaking_prefix.en` and `nonbreaking_prefix.de` from the [Moses non-breaking prefixes](https://github.com/moses-smt/mosesdecoder/tree/master/scripts/share/nonbreaking_prefixes)
 
+## Usage
 
-![alt text](https://pbs.twimg.com/media/DCKhefrUMAE9stK.jpg)
+Open `model.ipynb` and run the cells in order from the repository root. Hyperparameters (`D_MODEL=512`, 6 layers, 2048 FFN units, 8 heads, dropout 0.1, `MAX_LENGTH=20`, batch size 64) are set in the notebook. The notebook sets `EPOCHS = 3`; the original notes suggest 3 epochs on CPU and 5 on GPU. The last cell prompts for a sentence and prints the translation.
 
+## Results
 
-## Data:
-The data can be found in:  
-https://www.statmt.org/europarl/ 
+The notebook has no quantitative evaluation. One saved example from a short CPU training run:
 
-And the non_breaking_prefixes can be found in this repository:  
-https://github.com/moses-smt/mosesdecoder/tree/master/scripts/share/nonbreaking_prefixes
+```
+Input: how are you?
+Predicted translation: Wie sind Sie das tun?
+```
 
-# Training 
+Sentences are capped at 20 tokens and training is brief, so translations are rough.
 
-**NOTE :** use 3-5 epochs according to the processing unit you have , if it is a CPU use 3 epochs , if it is a GPU use 5 epochs.
+## Tech stack
 
-# References 
+Python, TensorFlow 2 / Keras, TensorFlow Datasets, NumPy
 
-[Attention Is All You Need](https://arxiv.org/pdf/1706.03762)
+## References
 
-This repository provides an overview and implementation details of the seminal paper "Attention Is All You Need" by Vaswani et al., which introduced the Transformer architecture — a breakthrough in deep learning for natural language processing and beyond.
+- Vaswani et al., [Attention Is All You Need](https://arxiv.org/abs/1706.03762), 2017
+- [Europarl parallel corpus](https://www.statmt.org/europarl/)
+- [Moses decoder](https://github.com/moses-smt/mosesdecoder) non-breaking prefixes
+
+## License
+
+MIT, see [LICENSE](LICENSE).
